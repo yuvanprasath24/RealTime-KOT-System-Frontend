@@ -54,18 +54,30 @@ export function MenuPanel() {
     }
   };
 
-  const updateMenuItem = (id, name, price, category) => {
-    setMenuItems(menuItems.map(item =>
-      item.id === id ? { id, name, price, category } : item
-    ));
-    setEditingItem(null);
+  //TO UPDATE MENU ITEM
+  const updateMenuItem = async (id, name, price, category) => {
+    
+    const menuItemDTO = {
+      name: name,
+      price: price,
+      category: category,
+      menuStatus: "ACTIVE"
+    }
+    try{
+      const respone = await API.put(`/menu_items/${id}/update`, menuItemDTO);
+      console.log(respone);
+      await fetchMenuItems();
+      setEditingItem(null);
+    }
+    catch(err){
+      console.error(err);
+    }
   };
 
   //TO DELETE A MENU ITEM
   const deleteMenuItem = async (id) => {
     try{
-      const response = await API.delete(`/menu_items/${id}/delete`);
-      console.log(response);
+      await API.delete(`/menu_items/${id}/delete`);
       await fetchMenuItems();
     }
     catch(err){
