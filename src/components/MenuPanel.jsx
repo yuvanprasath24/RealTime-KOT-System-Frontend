@@ -4,32 +4,54 @@ import { useEffect, useState } from 'react';
 import { Edit2, Trash2, Plus } from 'lucide-react';
 import AddMenuModal from './AddMenuModal';
 import EditMenuModal from './EditMenuModal';
-import axios from 'axios';
+import API from '../configurations/api';
+
 
 export function MenuPanel() {
-  const [menuItems, setMenuItems] = useState([
-    //{ id: 1, name: 'Chinken Biriyani', price: 200, category: 'Main course' },
-  ]);
+
+  const [menuItems, setMenuItems] = useState([]);
+
+  const fetchMenuItems = async () => {
+    try {
+      const response = await API.get('/menu_items/all');
+      setMenuItems(response.data.data);
+      console.log(response.data.data)
+    }
+    catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
-    axios.get('http://localhost:8080/api/menu_items')
-    .then((response) => {
-        setMenuItems(response.data);
-    });
-  });
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchMenuItems();
+  }, []);
+
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const categories = ['ALL', 'STARTERS', 'MAIN_COURSES', 'DESSERTS'];
 
-  const categories = ['ALL', 'Starters', 'Main course', 'Deserts'];
-
-  const filteredItems = activeCategory === 'ALL' 
-    ? menuItems 
+  const filteredItems = activeCategory === 'ALL'
+    ? menuItems
     : menuItems.filter(item => item.category === activeCategory);
 
-  const addMenuItem = (name, price, category) => {
-   // const newId = Math.max(...menuItems.map(m => m.id), 0) + 1;
-    setMenuItems([...menuItems, { name, price, category }]);
-    setShowModal(false);
+  //ADDING MENU ITEM
+  const addMenuItem = async (name, price, category) => {
+    const menuItemDTO = {
+      name: name,
+      price: price,
+      category: category,
+      menuStatus: "ACTIVE"
+    }
+    try {
+      const reponse = await API.post('/menu_items/addMenu', menuItemDTO);
+      await fetchMenuItems();
+      setShowModal(false);
+    }
+    catch (err) {
+      console.error(err);
+    }
   };
 
   const updateMenuItem = (id, name, price, category) => {
@@ -39,8 +61,44 @@ export function MenuPanel() {
     setEditingItem(null);
   };
 
-  const deleteMenuItem = (id) => {
-    setMenuItems(menuItems.filter(m => m.id !== id));
+  //TO DELETE A MENU ITEM
+  const deleteMenuItem = async (id) => {
+    try{
+      const response = await API.delete(`/menu_items/${id}/delete`);
+      console.log(response);
+      await fetchMenuItems();
+    }
+    catch(err){
+      console.error(err);
+    }
+  };
+
+  //CHANGING MENU STATUS
+  const toggleMenu = async (id, currentStatus) => {
+    const newStatus =
+      currentStatus === "ACTIVE"
+        ? "INACTIVE"
+        : "ACTIVE";
+
+    try {
+      const response = await API.patch(
+        `/menu_items/${id}/status`,
+        {
+          menuStatus: newStatus
+        }
+      );
+      // Update local state
+      setMenuItems(prev =>
+        prev.map(item =>
+          item.id === id
+            ? response.data.data
+            : item
+        )
+      );
+
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -54,11 +112,10 @@ export function MenuPanel() {
           <button
             key={category}
             onClick={() => setActiveCategory(category)}
-            className={`px-6 py-2 rounded-full font-semibold transition ${
-              activeCategory === category
-                ? 'bg-black text-white'
-                : 'bg-white text-black hover:bg-gray-100'
-            }`}
+            className={`px-6 py-2 rounded-full font-semibold transition ${activeCategory === category
+              ? 'bg-black text-white'
+              : 'bg-white text-black hover:bg-gray-100'
+              }`}
           >
             {category}
           </button>
@@ -86,6 +143,24 @@ export function MenuPanel() {
               >
                 <Edit2 size={18} />
               </button>
+
+              {/* Toggle Switch */}
+              <button
+                onClick={() => toggleMenu(item.id, item.menuStatus)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${item.menuStatus === "ACTIVE"
+                  ? "bg-black"
+                  : "bg-gray-300"
+                  }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${item.menuStatus === "ACTIVE"
+                    ? "translate-x-6"
+                    : "translate-x-1"
+                    }`}
+                />
+              </button>
+
+
               <button
                 onClick={() => deleteMenuItem(item.id)}
                 className="p-2 hover:bg-red-100 rounded transition text-gray-600 hover:text-red-600"

@@ -72,9 +72,9 @@ export default function AddMenuModal({ onClose, onAdd }) {
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition text-black"
             >
-              <option>Starters</option>
-              <option>Main course</option>
-              <option>Deserts</option>
+              <option>STARTERS</option>
+              <option>MAIN_COURSES</option>
+              <option>DESSERTS</option>
             </select>
           </div>
 
