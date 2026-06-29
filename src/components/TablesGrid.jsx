@@ -1,11 +1,83 @@
 import TableCard from './TableCard';
 import AddTableButton from './AddTableButton';
+import { useEffect, useState } from 'react';
+import API from '../configurations/api';
 
-export function TablesGrid({ tables, onAddTable, onDeleteTable, onToggleTable }) {
+export function TablesGrid() {
+  const [tables, setTables] = useState([]);
+
+  // FETCHING TABELS
+  const fetchTables = async () => {
+    try{
+      const respone = await API.get('/tables');
+      setTables(respone.data.data);
+      console.log(respone.data.data);
+    }
+    catch(err){
+      console.error(err);
+    }
+  }
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchTables();
+  },[])
+
+  //ADDING NEW TABLE
+  const addTable = async () => {
+    try{
+      const respone = await API.post('/tables');
+      await fetchTables();
+      console.log(respone.data.data)
+    }
+    catch(err){
+      console.error(err);
+    }
+  };
+
+  // TO DELETE A TABLE
+  const deleteTable = async (table_number) => {
+    try{
+      await API.delete(`/tables/${table_number}/delete`);
+      await fetchTables();
+    }
+    catch(err){
+      console.error(err);
+    }
+  };
+
+  // CHANGING TABLE STATUS
+  const toggleTable = async (table_number, currentStatus) => {
+    const newStatus = 
+      currentStatus === "VACANT"
+        ? "OUT_OF_SERVICE"
+        : "VACANT";
+    
+    try{
+      const respone = await API.patch(
+         `/tables/${table_number}/status`,
+        {
+          status : newStatus
+        }
+        );
+
+        setTables(prev => 
+          prev.map(table => 
+            table.table_number === table_number
+              ? respone.data.data
+              : table
+          )
+        );
+    } catch(err){
+      console.error(err);
+    }
+  };
+
+
   return (
     <div className="p-8">
       {/* Main Content Container */}
-      <div className="bg-gray-200 rounded-2xl border-4 border-black p-12 min-h-screen">
+      {/* <div className="bg-gray-200 rounded-2xl border-4 border-black p-12 min-h-screen"> */}
+      <div className="bg-gray-200 rounded-2xl border-4 p-12 min-h-screen">
         {/* Header */}
         <h2 className="text-4xl font-bold text-black text-center mb-12 uppercase">
           TABLES
@@ -17,15 +89,15 @@ export function TablesGrid({ tables, onAddTable, onDeleteTable, onToggleTable })
             <TableCard
               key={table.id}
               table={table}
-              onDelete={onDeleteTable}
-              onToggle={onToggleTable}
+              onDelete={deleteTable}
+              onToggle={toggleTable}
             />
           ))}
         </div>
 
         {/* Add Table Button */}
         <div className="flex">
-          <AddTableButton onAdd={onAddTable} />
+          <AddTableButton onAdd={addTable} />
         </div>
       </div>
     </div>

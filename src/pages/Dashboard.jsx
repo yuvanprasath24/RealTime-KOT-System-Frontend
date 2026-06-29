@@ -8,26 +8,7 @@ import {KitchenDashboard} from '../components/KitchenDashboard';
 export  function Dashboard() {
   const [activeTab, setActiveTab] = useState('admin');
   const [currentView, setCurrentView] = useState('tables');
-  const [tables, setTables] = useState([
-    { id: 1, name: 'table 1', isActive: true },
-    { id: 2, name: 'table 2', isActive: true },
-    { id: 3, name: 'table 3', isActive: false },
-  ]);
-
-  const addTable = () => {
-    const newId = Math.max(...tables.map(t => t.id), 0) + 1;
-    setTables([...tables, { id: newId, name: `table ${newId}`, isActive: true }]);
-  };
-
-  const deleteTable = (id) => {
-    setTables(tables.filter(t => t.id !== id));
-  };
-
-  const toggleTable = (id) => {
-    setTables(tables.map(t => 
-      t.id === id ? { ...t, isActive: !t.isActive } : t
-    ));
-  };
+  
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -40,12 +21,7 @@ export  function Dashboard() {
           ) : (
             <>
               {currentView === 'tables' && (
-                <TablesGrid 
-                  tables={tables} 
-                  onAddTable={addTable}
-                  onDeleteTable={deleteTable}
-                  onToggleTable={toggleTable}
-                />
+                <TablesGrid />
               )}
               {currentView === 'menu' && (
                 <MenuPanel />

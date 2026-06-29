@@ -2,18 +2,23 @@
 
 import { Menu, Table, Utensils, ListOrdered, LogOut } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import API from '../configurations/api';
+import { getUser } from '../configurations/GetUser';
 
 export function Sidebar({ currentView, setCurrentView }) {
 
   const [userName, setUserName] = useState('');
 
   useEffect(() => {
-    API.get('/restaurant/me')
-    .then((res) => {
-      setUserName(res.data.data)
-    })
-    .catch((err) => console.error("Fetching UserName Failed",err));
+    const fetchUser = async () => {
+      try{
+        const user = await getUser();
+        setUserName(user);
+      }
+      catch(err){
+        console.error(err);
+      }
+    }
+    fetchUser();
   },[])
 
   const navItems = [

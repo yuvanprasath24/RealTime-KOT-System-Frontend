@@ -11,11 +11,11 @@ export function MenuPanel() {
 
   const [menuItems, setMenuItems] = useState([]);
 
+  // FETCHING MENU ITEMS
   const fetchMenuItems = async () => {
     try {
-      const response = await API.get('/menu_items/all');
+      const response = await API.get('/menu_items/admin/all');
       setMenuItems(response.data.data);
-      console.log(response.data.data)
     }
     catch (err) {
       console.error(err);
@@ -45,7 +45,7 @@ export function MenuPanel() {
       menuStatus: "ACTIVE"
     }
     try {
-      const reponse = await API.post('/menu_items/addMenu', menuItemDTO);
+      await API.post('/menu_items/addMenu', menuItemDTO);
       await fetchMenuItems();
       setShowModal(false);
     }
