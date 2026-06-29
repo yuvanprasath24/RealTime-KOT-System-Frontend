@@ -1,8 +1,22 @@
 import { Download, Trash2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { useState, useEffect } from 'react';
+import { getUser } from '../configurations/GetUser';
+import { downloadQR } from '../configurations/downloadQR';
 
 export default function TableCard({ table, onDelete, onToggle }) {
-  const qrUrl = `http://localhost:5173/customer/menu?restaurantId=${currentRestaurantId}&tableId=${table.id}`;
+
+  const [restaurantId, setRestaurantId] = useState('');
+
+  useEffect(() => {
+    const fetchRestaurantId = async () => {
+      const user = await getUser();
+      setRestaurantId(user.restaurantID);
+    }
+    fetchRestaurantId();
+  }, [])
+
+  const qrUrl = `http://localhost:5173/customer/menu?restaurantId=${restaurantId}&tableNumber=${table.table_number}`;
   return (
     <div className="bg-white rounded-lg p-6 flex flex-col h-full shadow-sm hover:shadow-md transition">
       {/* Header: Table Name and Controls */}
@@ -26,7 +40,7 @@ export default function TableCard({ table, onDelete, onToggle }) {
           </button>
 
           {/* Download Icon */}
-          <button className="p-2 hover:bg-gray-100 rounded transition">
+          <button onClick={() => downloadQR(table.table_number)} className="p-2 hover:bg-gray-100 rounded transition">
             <Download size={18} className="text-black" />
           </button>
         </div>
@@ -40,6 +54,14 @@ export default function TableCard({ table, onDelete, onToggle }) {
           <div className="bg-black rounded"></div>
           <div className="bg-black"></div>
         </div> */}
+
+        <div className="p-2 bg-white rounded-md my-4 flex justify-center">
+          <QRCodeSVG
+            id={`qr-${table.table_number}`}
+            value={qrUrl}
+            size={160}
+            includeMargin={true} />
+        </div>
 
       </div>
 

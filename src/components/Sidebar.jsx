@@ -12,7 +12,7 @@ export function Sidebar({ currentView, setCurrentView }) {
     const fetchUser = async () => {
       try{
         const user = await getUser();
-        setUserName(user);
+        setUserName(user.username);
       }
       catch(err){
         console.error(err);
