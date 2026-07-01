@@ -16,7 +16,7 @@ export function MyOrders({orders, onBack}) {
 
             {/* Orders List */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 pb-20">
-                {orders.orderItem.length === 0 ? (
+                {orders.length === 0 ? (
                     <div className="text-center py-12 text-gray-600">
                         <p className="text-lg">No active orders</p>
                     </div>

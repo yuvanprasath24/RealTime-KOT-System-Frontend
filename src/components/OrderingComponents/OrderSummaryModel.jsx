@@ -2,8 +2,8 @@ import { X, Minus, Plus } from "lucide-react"
 
 export function OrderSummaryModel({onBack, cart, placeOrder, updateQuantity}) {
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const sgst = cartTotal * 0.09;
-    const cgst = cartTotal * 0.09;
+    const sgst = cartTotal * 0.025;
+    const cgst = cartTotal * 0.025;
     const grandTotal = cartTotal + sgst + cgst;
     
     return (

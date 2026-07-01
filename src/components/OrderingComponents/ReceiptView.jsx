@@ -1,16 +1,30 @@
 import { Download, Share2 } from "lucide-react";
 import { handleShareReceipt } from "./handleShareReceipt";
 import { handleDownloadReceipt } from "./handleDownloadReceipt";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { CloseOrder } from "./CloseOrderModel";
 
-export function ReceiptView({cart, onBack}) {
-    const receiptItems = cart.length > 0 ? cart : [
-        // { name: 'Chinken Biriyani', price: 200, quantity: 1 },
-        // { name: 'Paneer Tikka', price: 180, quantity: 2 },
+export function ReceiptView({orders, onBack, restaurantID,tableNumber}) {
+    
+    const receiptItems = orders.length > 0 ? orders.orderItem : [
+        
     ];
     const receiptTotal = receiptItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const receiptSgst = receiptTotal * 0.09;
-    const receiptCgst = receiptTotal * 0.09;
-    const receiptGrandTotal = receiptTotal + receiptSgst + receiptCgst;
+    const receiptSgst = receiptTotal * 0.025;
+    const receiptCgst = receiptTotal * 0.025;
+    const receiptGrandTotal = orders.totalAmount;
+
+    //Fetch Restaurant Name
+    const [restaurant,setRestaurant] = useState('');
+    useEffect(() => {
+        if(restaurantID){
+            axios.get(`http://127.0.0.1:8080/public/api/restaurant?restaurantID=${restaurantID}`)
+            .then(res => setRestaurant(res.data.data))
+            .catch(err => console.log("Could not fetch restaurant", err));
+        }
+    },[restaurantID])
+
     return (
         <div className="flex flex-col h-screen w-screen bg-gray-300 overflow-hidden">
             {/* Receipt Container */}
@@ -18,21 +32,21 @@ export function ReceiptView({cart, onBack}) {
                 <div className="bg-white w-full max-w-xs rounded-lg shadow-lg px-6 py-6 space-y-3 font-mono text-xs sm:text-sm">
                     {/* Restaurant Info */}
                     <div className="text-center border-b border-gray-300 pb-3">
-                        <h1 className="text-xl font-bold text-black">The Restaurant</h1>
-                        <p className="text-gray-600 text-xs mt-2">123 Main Street, City</p>
+                        <h1 className="text-xl font-bold text-black">{restaurant.restaurantName}</h1>
+                        <p className="text-gray-600 text-xs mt-2">{restaurant.restaurantAddress}</p>
                     </div>
 
                     {/* Table Number */}
                     <div className="text-center pb-3">
-                        <p className="text-gray-600">Table No: <span className="font-bold text-black">5</span></p>
-                        <p className="text-gray-600 text-xs mt-1">Bill Date: 29/06/2026</p>
+                        <p className="text-gray-600">Table No: <span className="font-bold text-black">{tableNumber}</span></p>
+                        <p className="text-gray-600 text-xs mt-1">Bill Date: {new Date(orders.createdAt).toLocaleDateString("en-IN")}</p>
                     </div>
 
                     {/* Items */}
                     <div className="border-t border-b border-gray-300 py-3 space-y-1">
                         {receiptItems.map((item, idx) => (
                             <div key={idx} className="flex justify-between text-black">
-                                <span className="flex-1">{item.name} x{item.quantity}</span>
+                                <span className="flex-1">{item.menuItemName} x{item.quantity}</span>
                                 <span className="ml-2">₹{item.price * item.quantity}</span>
                             </div>
                         ))}
@@ -85,7 +99,10 @@ export function ReceiptView({cart, onBack}) {
                 </div>
 
                 <button
-                    onClick={onBack}
+                    onClick={() => {
+                        CloseOrder(orders, restaurantID)
+                        onBack
+                    }}
                     className="w-full bg-green-600 text-white py-2 rounded-lg font-bold text-sm hover:bg-green-700 transition"
                 >
                     PROCEED TO PAYMENT

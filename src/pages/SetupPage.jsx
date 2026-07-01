@@ -6,18 +6,23 @@ import axios from "axios";
 
 export function SetupPage() {
     const [restaurantName, setRestaurantName] = useState('');
+    const [restaurantAddress, setRestaurantAddress] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!restaurantName.trim()) return;
+        if (!restaurantName.trim() || !restaurantAddress.trim()) return;
 
         setLoading(true);
         try {
-           // Send the request using the initial token inside the headers
+            // Send the request using the initial token inside the headers
             const response = await axios.post('http://localhost:8080/api/restaurant/setup',
-                { restaurantName: restaurantName },
+                {
+                    restaurantName: restaurantName,
+                    restaurantAddress: restaurantAddress
+
+                },
                 {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('APP_TOKEN')}`,
@@ -80,7 +85,18 @@ export function SetupPage() {
                                 disabled={loading}
                             />
                         </div>
-
+                        <div>
+                            <label className="text-sm font-bold uppercase text-gray-800">Restaurant Address</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="e.g., 123 Main Street, City"
+                                value={restaurantAddress}
+                                onChange={(e) => setRestaurantAddress(e.target.value)}
+                                className="mt-2 w-full rounded-lg border-2 border-black bg-white px-4 py-3 text-base font-semibold text-black placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-black/10"
+                                disabled={loading}
+                            />
+                        </div>
                         <button
                             type="submit"
                             disabled={loading || !restaurantName.trim()}

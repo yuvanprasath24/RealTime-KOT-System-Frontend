@@ -12,10 +12,23 @@ export function OrderingPage() {
     const [currentView, setCurrentView] = useState('menu');
     const [activeCategory, setActiveCategory] = useState('ALL');
     const [cart, setCart] = useState([]);
-    const [orders, setOrders] = useState([
-        // { id: 1, itemName: 'Paneer Tikka', status: 'PENDING', time: '2 mins ago' },
-        // { id: 2, itemName: 'Butter Chicken', status: 'PREPARING', time: '5 mins ago' },
-    ]);
+    const [orders, setOrders] = useState([]);
+
+    // To Fetch current orders
+    const fetchOrders = async () => {
+        try {
+            const respone = await axios.get(`http://127.0.0.1:8080/public/api/orders/${tableId}/active?restaurantID=${restaurantID}`);
+            console.log(respone.data.data);
+            setOrders(respone.data.data);
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchOrders();
+    }, []);
 
     // Hide scrollbars globally
     if (typeof window !== 'undefined') {
@@ -41,6 +54,7 @@ export function OrderingPage() {
     // Fetching menu items
     const restaurantID = searchParams.get('restaurantId');
     const tableId = searchParams.get('tableId');
+    const tableNumber = searchParams.get('tableNumber');
 
     const [menuItems, setMenuItems] = useState([]);
 
@@ -90,12 +104,11 @@ export function OrderingPage() {
         };
 
         try {
-            const response = await axios.post(`http://127.0.0.1:8080/public/api/orders?restaurantID=${restaurantID}`,
+            await axios.post(`http://127.0.0.1:8080/public/api/orders?restaurantID=${restaurantID}`,
                 payload
             );
-            setOrders(response.data.data);
-            console.log(response.data.data);
             setCart([]);
+            fetchOrders();
             setCurrentView('myOrders');
         }
         catch (err) {
@@ -181,6 +194,7 @@ export function OrderingPage() {
     if (currentView === 'orderSummary') {
         return (
             <OrderSummaryModel
+                key={orders.id}
                 onBack={() => { setCurrentView('menu') }}
                 cart={cart}
                 placeOrder={placeOrder}
@@ -193,6 +207,7 @@ export function OrderingPage() {
     if (currentView === 'myOrders') {
         return (
             <MyOrders
+                key={orders.id}
                 orders={orders}
                 onBack={() => { setCurrentView('menu') }}
             />
@@ -203,8 +218,11 @@ export function OrderingPage() {
     if (currentView === 'receipt') {
         return (
             <ReceiptView
-                cart={cart}
+                key={orders.id}
+                orders={orders}
                 onBack={() => { setCurrentView('menu') }}
+                restaurantID={restaurantID}
+                tableNumber={tableNumber}
             />
         );
     }

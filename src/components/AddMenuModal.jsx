@@ -6,7 +6,7 @@ export default function AddMenuModal({ onClose, onAdd }) {
   const [formData, setFormData] = useState({
     name: '',
     price: '',
-    category: 'Main course',
+    category: 'MAIN_COURSES',
   });
 
   const handleChange = (e) => {
@@ -21,7 +21,7 @@ export default function AddMenuModal({ onClose, onAdd }) {
     e.preventDefault();
     if (formData.name && formData.price) {
       onAdd(formData.name, formData.price, formData.category);
-      setFormData({ name: '', price: '', category: 'Main course' });
+      setFormData({ name: '', price: '', category: 'MAIN_COURSES' });
     }
   };
 

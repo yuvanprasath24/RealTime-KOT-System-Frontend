@@ -16,7 +16,7 @@ export default function TableCard({ table, onDelete, onToggle }) {
     fetchRestaurantId();
   }, [])
 
-  const qrUrl = `http://localhost:5173/customer/menu?restaurantId=${restaurantId}&tableId=${table.tableId}`;
+  const qrUrl = `http://localhost:5173/customer/menu?restaurantId=${restaurantId}&tableId=${table.tableId}&tableNumber=${table.table_number}`;
   return (
     <div className="bg-white rounded-lg p-6 flex flex-col h-full shadow-sm hover:shadow-md transition">
       {/* Header: Table Name and Controls */}
