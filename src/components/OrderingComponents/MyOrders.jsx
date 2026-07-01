@@ -16,25 +16,25 @@ export function MyOrders({orders, onBack}) {
 
             {/* Orders List */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 pb-20">
-                {orders.length === 0 ? (
+                {orders.orderItem.length === 0 ? (
                     <div className="text-center py-12 text-gray-600">
                         <p className="text-lg">No active orders</p>
                     </div>
                 ) : (
-                    orders.map(order => (
-                        <div key={order.id} className="bg-white rounded-lg p-4 border-l-4 border-black">
+                    orders.orderItem.map(orderItem => (
+                        <div key={orderItem.id} className="bg-white rounded-lg p-4 border-l-4 border-black">
                             <div className="flex justify-between items-start mb-2">
-                                <h3 className="font-bold text-black text-base sm:text-lg">{order.itemName}</h3>
-                                <span className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ml-2 ${order.status === 'PENDING'
+                                <h3 className="font-bold text-black text-base sm:text-lg">{orderItem.menuItemName}</h3>
+                                <span className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ml-2 ${orderItem.status === 'PENDING'
                                         ? 'bg-gray-200 text-gray-700'
-                                        : order.status === 'PREPARING'
+                                        : orderItem.status === 'PREPARING'
                                             ? 'bg-yellow-100 text-yellow-700 animate-pulse'
                                             : 'bg-green-100 text-green-700'
                                     }`}>
-                                    {order.status}
+                                    {orderItem.status}
                                 </span>
                             </div>
-                            <p className="text-sm text-gray-600">{order.time}</p>
+                            {/* <p className="text-sm text-gray-600">{order.time}</p> */}
                         </div>
                     ))
                 )}

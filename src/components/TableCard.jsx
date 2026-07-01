@@ -16,7 +16,7 @@ export default function TableCard({ table, onDelete, onToggle }) {
     fetchRestaurantId();
   }, [])
 
-  const qrUrl = `http://localhost:5173/customer/menu?restaurantId=${restaurantId}&tableNumber=${table.table_number}`;
+  const qrUrl = `http://localhost:5173/customer/menu?restaurantId=${restaurantId}&tableId=${table.tableId}`;
   return (
     <div className="bg-white rounded-lg p-6 flex flex-col h-full shadow-sm hover:shadow-md transition">
       {/* Header: Table Name and Controls */}
@@ -25,7 +25,7 @@ export default function TableCard({ table, onDelete, onToggle }) {
         <div className="flex items-center gap-2">
           {/* Toggle Switch */}
           <button
-            onClick={() => onToggle(table.table_number, table.status)}
+            onClick={() => onToggle(table.tableId, table.status)}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${table.status === "VACANT"
               ? "bg-black"
               : "bg-gray-300"
@@ -68,7 +68,7 @@ export default function TableCard({ table, onDelete, onToggle }) {
       {/* Footer: Trash Icon */}
       <div className="flex justify-end">
         <button
-          onClick={() => onDelete(table.table_number)}
+          onClick={() => onDelete(table.tableId)}
           className="p-2 hover:bg-gray-100 rounded transition"
         >
           <Trash2 size={18} className="text-black" />

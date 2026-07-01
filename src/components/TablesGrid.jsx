@@ -11,7 +11,6 @@ export function TablesGrid() {
     try{
       const respone = await API.get('/tables');
       setTables(respone.data.data);
-      console.log(respone.data.data);
     }
     catch(err){
       console.error(err);
@@ -25,9 +24,8 @@ export function TablesGrid() {
   //ADDING NEW TABLE
   const addTable = async () => {
     try{
-      const respone = await API.post('/tables');
+      await API.post('/tables');
       await fetchTables();
-      console.log(respone.data.data)
     }
     catch(err){
       console.error(err);
@@ -35,9 +33,9 @@ export function TablesGrid() {
   };
 
   // TO DELETE A TABLE
-  const deleteTable = async (table_number) => {
+  const deleteTable = async (tableId) => {
     try{
-      await API.delete(`/tables/${table_number}/delete`);
+      await API.delete(`/tables/${tableId}/delete`);
       await fetchTables();
     }
     catch(err){
@@ -46,7 +44,7 @@ export function TablesGrid() {
   };
 
   // CHANGING TABLE STATUS
-  const toggleTable = async (table_number, currentStatus) => {
+  const toggleTable = async (tableId, currentStatus) => {
     const newStatus = 
       currentStatus === "VACANT"
         ? "OUT_OF_SERVICE"
@@ -54,7 +52,7 @@ export function TablesGrid() {
     
     try{
       const respone = await API.patch(
-         `/tables/${table_number}/status`,
+         `/tables/${tableId}/status`,
         {
           status : newStatus
         }
@@ -62,7 +60,7 @@ export function TablesGrid() {
 
         setTables(prev => 
           prev.map(table => 
-            table.table_number === table_number
+            table.tableId === tableId
               ? respone.data.data
               : table
           )

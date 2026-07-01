@@ -13,8 +13,8 @@ export function OrderingPage() {
     const [activeCategory, setActiveCategory] = useState('ALL');
     const [cart, setCart] = useState([]);
     const [orders, setOrders] = useState([
-        { id: 1, itemName: 'Paneer Tikka', status: 'PENDING', time: '2 mins ago' },
-        { id: 2, itemName: 'Butter Chicken', status: 'PREPARING', time: '5 mins ago' },
+        // { id: 1, itemName: 'Paneer Tikka', status: 'PENDING', time: '2 mins ago' },
+        // { id: 2, itemName: 'Butter Chicken', status: 'PREPARING', time: '5 mins ago' },
     ]);
 
     // Hide scrollbars globally
@@ -40,15 +40,15 @@ export function OrderingPage() {
 
     // Fetching menu items
     const restaurantID = searchParams.get('restaurantId');
-   // const tableNumber = searchParams.get('tableNumber');
+    const tableId = searchParams.get('tableId');
 
     const [menuItems, setMenuItems] = useState([]);
-    
+
     useEffect(() => {
         if (restaurantID) {
             // Notice this hits a PUBLIC endpoint because customers don't have login tokens!
             axios.get(`http://127.0.0.1:8080/public/api/menu_items/customer/all?restaurantID=${restaurantID}`)
-                .then((res) => {setMenuItems(res.data.data); console.log(res.data.data)})
+                .then((res) => { setMenuItems(res.data.data); })
                 .catch(err => console.error("Could not fetch the menu:", err));
         }
     }, [restaurantID]);
@@ -78,17 +78,31 @@ export function OrderingPage() {
         }
     };
 
-    const placeOrder = () => {
-        cart.forEach(item => {
-            setOrders([...orders, {
-                id: Date.now() + Math.random(),
-                itemName: item.name,
-                status: 'PENDING',
-                time: 'Just now'
-            }]);
-        });
-        setCart([]);
-        setCurrentView('myOrders');
+    const placeOrder = async () => {
+        const orderItemsPayload = cart.map(item => ({
+            menuItemId: item.id,
+            quantity: item.quantity
+        }));
+
+        const payload = {
+            tableId: tableId,
+            orderItems: orderItemsPayload
+        };
+
+        try {
+            const response = await axios.post(`http://127.0.0.1:8080/public/api/orders?restaurantID=${restaurantID}`,
+                payload
+            );
+            setOrders(response.data.data);
+            console.log(response.data.data);
+            setCart([]);
+            setCurrentView('myOrders');
+        }
+        catch (err) {
+            console.error("Order processing breakdown:", err);
+            alert("Something went wrong. Please notify restaurant staff.");
+        }
+
     };
 
 
@@ -139,6 +153,7 @@ export function OrderingPage() {
                         const cartItem = cart.find(c => c.id === item.id);
                         return (
                             <MenuItemsModel
+                                key={item.id}
                                 item={item}
                                 cartItem={cartItem}
                                 updateQuantity={updateQuantity}
