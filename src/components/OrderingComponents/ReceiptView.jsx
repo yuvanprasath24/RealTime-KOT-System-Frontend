@@ -7,13 +7,11 @@ import { CloseOrder } from "./CloseOrderModel";
 
 export function ReceiptView({orders, onBack, restaurantID,tableNumber}) {
     
-    const receiptItems = orders.length > 0 ? orders.orderItem : [
-        
-    ];
+    const receiptItems = orders?.orderItem ?? [];
     const receiptTotal = receiptItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const receiptSgst = receiptTotal * 0.025;
     const receiptCgst = receiptTotal * 0.025;
-    const receiptGrandTotal = orders.totalAmount;
+    const receiptGrandTotal = orders?.totalAmount ?? 0;
 
     //Fetch Restaurant Name
     const [restaurant,setRestaurant] = useState('');
@@ -100,8 +98,8 @@ export function ReceiptView({orders, onBack, restaurantID,tableNumber}) {
 
                 <button
                     onClick={() => {
-                        CloseOrder(orders, restaurantID)
-                        onBack
+                        CloseOrder(orders, restaurantID);
+                        onBack()
                     }}
                     className="w-full bg-green-600 text-white py-2 rounded-lg font-bold text-sm hover:bg-green-700 transition"
                 >

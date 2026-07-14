@@ -35,6 +35,7 @@ export function MyOrders({orders, onBack}) {
                                 </span>
                             </div>
                             {/* <p className="text-sm text-gray-600">{order.time}</p> */}
+                            <span className="bg-black text-white px-2 py-1 rounded text-xs font-bold">x{orderItem.quantity}</span>
                         </div>
                     ))
                 )}

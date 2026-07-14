@@ -1,14 +1,24 @@
-import  { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import { DashboardHeader } from '../components/DashboardHeader';
-import {TablesGrid} from '../components/TablesGrid';
-import {MenuPanel} from '../components/MenuPanel';
-import {KitchenDashboard} from '../components/KitchenDashboard';
+import { TablesGrid } from '../components/TablesGrid';
+import { MenuPanel } from '../components/MenuPanel';
+import { KitchenDashboard } from '../components/KitchenDashboard';
+import { getUser } from '../configurations/GetUser';
 
-export  function Dashboard() {
+export function Dashboard() {
   const [activeTab, setActiveTab] = useState('admin');
   const [currentView, setCurrentView] = useState('tables');
-  
+
+  const [restaurantId, setRestaurantId] = useState('');
+
+  useEffect(() => {
+    const fetchRestaurantId = async () => {
+      const user = await getUser();
+      setRestaurantId(user.restaurantID);
+    }
+    fetchRestaurantId();
+  }, [])
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -17,11 +27,15 @@ export  function Dashboard() {
         <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
         <div className="flex-1 overflow-auto">
           {activeTab === 'kitchen' ? (
-            <KitchenDashboard />
+            <KitchenDashboard 
+              restaurantId={restaurantId}
+            />
           ) : (
             <>
               {currentView === 'tables' && (
-                <TablesGrid />
+                <TablesGrid 
+                  restaurantId={restaurantId}
+                />
               )}
               {currentView === 'menu' && (
                 <MenuPanel />

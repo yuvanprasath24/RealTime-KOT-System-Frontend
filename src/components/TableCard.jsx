@@ -1,20 +1,9 @@
 import { Download, Trash2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { useState, useEffect } from 'react';
-import { getUser } from '../configurations/GetUser';
 import { downloadQR } from '../configurations/downloadQR';
 
-export default function TableCard({ table, onDelete, onToggle }) {
+export default function TableCard({ table, onDelete, onToggle,restaurantId }) {
 
-  const [restaurantId, setRestaurantId] = useState('');
-
-  useEffect(() => {
-    const fetchRestaurantId = async () => {
-      const user = await getUser();
-      setRestaurantId(user.restaurantID);
-    }
-    fetchRestaurantId();
-  }, [])
 
   const qrUrl = `http://localhost:5173/customer/menu?restaurantId=${restaurantId}&tableId=${table.tableId}&tableNumber=${table.table_number}`;
   return (

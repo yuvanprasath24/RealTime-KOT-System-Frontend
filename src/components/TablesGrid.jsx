@@ -3,7 +3,7 @@ import AddTableButton from './AddTableButton';
 import { useEffect, useState } from 'react';
 import API from '../configurations/api';
 
-export function TablesGrid() {
+export function TablesGrid({restaurantId}) {
   const [tables, setTables] = useState([]);
 
   // FETCHING TABELS
@@ -86,6 +86,7 @@ export function TablesGrid() {
           {tables.map((table) => (
             <TableCard
               key={table.id}
+              restaurantId={restaurantId}
               table={table}
               onDelete={deleteTable}
               onToggle={toggleTable}
